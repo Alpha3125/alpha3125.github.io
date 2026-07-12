@@ -1,0 +1,23 @@
+const csvURL = "https://docs.google.com/spreadsheets/d/17YGIypmNw0u3RPd6pxDBDWpGeSHtGwfgZoOKCzXqY1o/export?format=csv&gid=0";
+
+fetch(csvURL)
+    .then(response => response.text())
+    .then(csv => {
+        console.log(csv);
+    });
+
+    fetch(csvURL)
+.then(r => r.text())
+.then(csv => {
+
+    const rows = csv.trim().split("\n");
+    const headers = rows[0].split(",");
+
+    const data = rows.slice(1).map(row => {
+        const values = row.split(",");
+        return Object.fromEntries(headers.map((h, i) => [h, values[i]]));
+    });
+
+    console.log(data);
+
+});
