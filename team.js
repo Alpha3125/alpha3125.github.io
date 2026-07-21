@@ -1,12 +1,25 @@
-console.log("team.js loaded");
-
 const API = "https://script.google.com/macros/s/AKfycbxmWEsq3epM3h9MI_v3G9Cy451z-0wts3zcwoZf_gHpSyqmR6L4A3LujdzmLGpzOqq5/exec";
 
 async function loadMembers() {
+
     const response = await fetch(API);
     const members = await response.json();
 
-    console.log(members);
+    const container = document.getElementById("team");
+
+    members.forEach(member => {
+
+        const card = document.createElement("div");
+
+        card.innerHTML = `
+            <h2>${member.Name}</h2>
+            <p>${member.Desig}</p>
+        `;
+
+        container.appendChild(card);
+
+    });
+
 }
 
 loadMembers();
