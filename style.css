@@ -298,5 +298,28 @@ footer {
         padding: 30px 6%;
     }
 
-    
+/* =========================
+   TIME CAPSULE
+   ========================= */
+
+    #time-capsule {
+        padding-top: 65px;
+        padding-bottom: 65px;
+    }
+
+    #time-capsule h2 {
+        font-size: clamp(30px, 3.2vw, 42px);
+        letter-spacing: -1.5px;
+    }
+
+    #time-capsule .about-text {
+        margin-top: 28px;
+        max-width: 850px;
+    }
+
+    #time-capsule .about-text p {
+        font-size: 16px;
+        line-height: 1.65;
+    }
+        
 }
