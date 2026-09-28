@@ -321,5 +321,11 @@ footer {
         font-size: 16px;
         line-height: 1.65;
     }
+
+    #capsule input:focus,
+    #capsule textarea:focus {
+    border-color: #999;
+    outline: none;
+    }
         
 }
