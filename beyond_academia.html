@@ -56,11 +56,65 @@
                         I have prepared a collection of messages for myself & people I closely know. These can be my predictions on how their life will turn out to be, or my thoughts on their current life.
                         There are services like <a href="openitlater.com">OpenItLater</a> but I created a rudimentary one myself. The messages are encrypted using double application of One-Time-Pads.
                     </p>
+
+                    <div id="capsule">
+                        <div id="capsule-gate">
+                            <input type="password" id="capsule-password" placeholder="Enter password" autocomplete="off">
+                            <button id="capsule-unlock">Unlock</button>
+                            <p id="capsule-gate-status"></p>
+                        </div>
+                        <div id="capsule-content">
+                            <div id="capsule-actions">
+                                <button id="capsule-write-button">Write a Letter</button>
+                                <button id="capsule-open-button">Open a Letter</button>
+                            </div>
+                            <div id="capsule-write">
+                                <h3>Write a Letter</h3>
+                                <textarea id="capsule-message" placeholder="Write your message..."></textarea>
+                                <p id="capsule-message-length">Message length: 0 bytes</p>
+                                <label for="capsule-key-1">Key 1</label>
+                                <input type="text" id="capsule-key-1" inputmode="numeric" autocomplete="off">
+                                <label for="capsule-key-2">Key 2</label>
+                                <input type="text" id="capsule-key-2" inputmode="numeric" autocomplete="off">
+                                <button id="capsule-generate-keys">Generate Keys</button>
+                                <label for="capsule-name">Name</label>
+                                <input type="text" id="capsule-name" autocomplete="off">
+                                <button id="capsule-encrypt">Encrypt &amp; Store</button>
+                                <p id="capsule-write-status"></p>
+                            </div>
+
+                            <div id="capsule-open">
+                                <h3>Open a Letter</h3>
+
+                                <label for="capsule-search-name">Name</label>
+                                <input type="text" id="capsule-search-name" autocomplete="off">
+
+                                <button id="capsule-search">Search</button>
+
+                                <div id="capsule-search-result">
+                                    <p>Encrypted message</p>
+                                    <textarea id="capsule-ciphertext" readonly></textarea>
+
+                                    <label for="capsule-decrypt-key-1">Key 1</label>
+                                    <input type="text" id="capsule-decrypt-key-1" inputmode="numeric" autocomplete="off">
+
+                                    <label for="capsule-decrypt-key-2">Key 2</label>
+                                    <input type="text" id="capsule-decrypt-key-2" inputmode="numeric" autocomplete="off">
+
+                                    <button id="capsule-decrypt">Decrypt</button>
+                                    <p id="capsule-open-status"></p>
+
+                                    <div id="capsule-message-result"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
         <div id="footer"></div>
     </div>
     <script src="script.js"></script>
+    <script src="timecapsule.js"></script>
 </body>
 </html>
