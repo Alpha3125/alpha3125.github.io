@@ -298,6 +298,35 @@ footer {
         padding: 30px 6%;
     }
 
+}
+
+.cv-dropdown {
+    margin-top: 25px;
+}
+
+.cv-dropdown summary {
+    display: inline-block;
+    cursor: pointer;
+    font-family: "Roboto", sans-serif;
+    font-size: 15px;
+    user-select: none;
+}
+
+.cv-dropdown summary::marker {
+    font-size: 12px;
+}
+
+.cv-section {
+    margin-top: 20px;
+}
+
+.cv-section iframe {
+    display: block;
+    width: 100%;
+    height: 850px;
+    border: 1px solid #ccc;
+}
+
 /* =========================
    TIME CAPSULE
    ========================= */
@@ -474,4 +503,3 @@ footer {
     }
 }
         
-}
