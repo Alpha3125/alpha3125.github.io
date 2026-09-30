@@ -61,11 +61,15 @@ if (capsule) {
     }
 
     function updateMessageLength() {
-        const characters = Array.from(messageInput.value);
-        if (characters.length > MAX_MESSAGE_LENGTH) {
-            messageInput.value = characters.slice(0, MAX_MESSAGE_LENGTH).join("");
+    const length = Array.from(messageInput.value).length;
+    messageLength.textContent = `Message length (Max ${MAX_MESSAGE_LENGTH} characters): ${length} / ${MAX_MESSAGE_LENGTH}`;
+
+    if (length > MAX_MESSAGE_LENGTH) {
+        messageLength.style.color = "#b33";
+        messageLength.textContent += " — Message is too long.";
+    } else {
+        messageLength.style.color = "";
         }
-        messageLength.textContent = `Message length: ${Array.from(messageInput.value).length} / ${MAX_MESSAGE_LENGTH} characters`;
     }
 
     function xorBytes(data, key1, key2) {
@@ -229,14 +233,6 @@ if (capsule) {
         setStatus(openStatus, "");
     });
 
-    const messageCharacters = Array.from(messageInput.value).length;
-    if (messageCharacters === 0) {
-        throw new Error("Please enter a message.");
-    }
-    if (messageCharacters > MAX_MESSAGE_LENGTH) {
-        throw new Error(`Message cannot exceed ${MAX_MESSAGE_LENGTH} characters.`);
-    }
-
     /* =========================
        MESSAGE / KEY GENERATION
        ========================= */
@@ -244,18 +240,21 @@ if (capsule) {
     messageInput.addEventListener("input", updateMessageLength);
 
     generateKeys.addEventListener("click", () => {
-        const length = encoder.encode(messageInput.value).length;
+        const length = Array.from(messageInput.value).length;
 
         if (length === 0) {
             setStatus(writeStatus, "Write a message first.");
             return;
         }
 
-        key1Input.value = keyToString(generateKey(length));
-        key2Input.value = keyToString(generateKey(length));
+        if (length > MAX_MESSAGE_LENGTH) {
+            setStatus(writeStatus, `Message cannot exceed ${MAX_MESSAGE_LENGTH} characters.`);
+            return;
+        }
 
-        updateMessageLength();
-        setStatus(writeStatus, `Generated two keys of ${length} numbers.`, true);
+        key1Input.value = keyToString(generateKey(encoder.encode(messageInput.value).length));
+        key2Input.value = keyToString(generateKey(encoder.encode(messageInput.value).length));
+        setStatus(writeStatus, `Generated keys for ${length} characters.`, true);
     });
 
     /* =========================
@@ -264,6 +263,15 @@ if (capsule) {
 
     encryptButton.addEventListener("click", async () => {
         try {
+            const messageLengthInCharacters = Array.from(messageInput.value).length;
+
+            if (messageLengthInCharacters === 0) {
+                throw new Error("Please enter a message.");
+            }
+
+            if (messageLengthInCharacters > MAX_MESSAGE_LENGTH) {
+                throw new Error(`Message cannot exceed ${MAX_MESSAGE_LENGTH} characters.`);
+            }
             const message = messageInput.value;
             const name = nameInput.value.trim();
             const messageBytes = encoder.encode(message);

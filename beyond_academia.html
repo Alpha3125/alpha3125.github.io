@@ -55,6 +55,7 @@
                     <p>
                         I have prepared a collection of messages for myself & people I closely know. These can be my predictions on how their life will turn out to be, or my thoughts on their current life.
                         There are services like <a href="openitlater.com">OpenItLater</a> but I created a rudimentary one myself. The messages are encrypted using double application of One-Time-Pads.
+                        This system can break in the near future if I have not thought of a some adversarial attack or if I mismanaged the database.
                     </p>
 
                     <div id="capsule">
@@ -80,6 +81,8 @@
                                 <label for="capsule-name">Name</label>
                                 <input type="text" id="capsule-name" autocomplete="off">
                                 <button id="capsule-encrypt">Encrypt &amp; Store</button>
+                                <label for="capsule-opening-date">Promised Opening Date</label>
+                                <input type="date" id="capsule-opening-date">
                                 <p id="capsule-write-status"></p>
                             </div>
 
