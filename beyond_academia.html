@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beyond Academia — Girija Sankar Ray</title>
+
     <script>
         document.documentElement.classList.add("js", "no-intro");
     </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <canvas id="backgroundCanvas" aria-hidden="true"></canvas>
 
@@ -20,15 +23,18 @@
             <div class="logo">
                 GIRIJA SANKAR RAY
             </div>
+
             <div class="nav-links">
                 <a href="index.html">Home</a>
                 <a href="academia.html">Academia</a>
                 <a>Beyond Academia</a>
             </div>
         </nav>
+
         <main>
             <section class="content about-section">
                 <h2>My Interests &amp; Hobbies</h2>
+
                 <div class="about-text">
                     <p>
                         Here, I share my hobbies, side projects, and other activities that interests me.
@@ -38,9 +44,10 @@
 
             <section class="content interests-section">
                 <h2>Places I Love To Manifest Myself At </h2>
+
                 <ul>
                     <li>TCS</li>
-                    <li>Cool & Creative Tech</li>
+                    <li>Cool &amp; Creative Tech</li>
                     <li>Geometry &amp; Topology</li>
                     <li>Programming (&amp; Coding)</li>
                     <li>Robotics</li>
@@ -49,11 +56,13 @@
                     <li>Having Fun!</li>
                 </ul>
             </section>
+
             <section class="content interests-section" id="time-capsule">
                 <h2>Encrypted Time Capsule Letters</h2>
+
                 <div class="about-text">
                     <p>
-                        I have prepared a collection of messages for myself & people I closely know. These can be my predictions on how their life will turn out to be, or my thoughts on their current life.
+                        I have prepared a collection of messages for myself &amp; people I closely know. These can be my predictions on how their life will turn out to be, or my thoughts on their current life.
                         There are services like <a href="openitlater.com">OpenItLater</a> but I created a rudimentary one myself. The messages are encrypted using double application of One-Time-Pads.
                         This system can break in the near future if I have not thought of a some adversarial attack or if I mismanaged the database.
                     </p>
@@ -64,25 +73,35 @@
                             <button id="capsule-unlock">Unlock</button>
                             <p id="capsule-gate-status"></p>
                         </div>
+
                         <div id="capsule-content">
                             <div id="capsule-actions">
                                 <button id="capsule-write-button">Write a Letter</button>
                                 <button id="capsule-open-button">Open a Letter</button>
                             </div>
+
                             <div id="capsule-write">
                                 <h3>Write a Letter</h3>
+
                                 <textarea id="capsule-message" placeholder="Write your message..."></textarea>
                                 <p id="capsule-message-length">Message length (Max 300 characters): 0 / 300</p>
+
                                 <label for="capsule-key-1">Key 1</label>
                                 <input type="text" id="capsule-key-1" inputmode="numeric" autocomplete="off">
+
                                 <label for="capsule-key-2">Key 2</label>
                                 <input type="text" id="capsule-key-2" inputmode="numeric" autocomplete="off">
+
                                 <button id="capsule-generate-keys">Generate Keys</button>
+
                                 <label for="capsule-name">Name</label>
                                 <input type="text" id="capsule-name" autocomplete="off">
+
                                 <label for="capsule-opening-date">Promised Opening Date</label>
                                 <input type="date" id="capsule-opening-date">
+
                                 <button id="capsule-encrypt">Encrypt &amp; Store</button>
+                                <p id="capsule-write-status"></p>
                             </div>
 
                             <div id="capsule-open">
@@ -95,6 +114,7 @@
 
                                 <div id="capsule-search-result">
                                     <p>Encrypted message</p>
+
                                     <textarea id="capsule-ciphertext" readonly></textarea>
 
                                     <label for="capsule-decrypt-key-1">Key 1</label>
@@ -105,7 +125,6 @@
 
                                     <button id="capsule-decrypt">Decrypt</button>
                                     <p id="capsule-open-status"></p>
-
                                     <div id="capsule-message-result"></div>
                                 </div>
                             </div>
@@ -113,20 +132,49 @@
                     </div>
                 </div>
             </section>
-            <section class="content interests-section">
+
+            <section class="content interests-section" id="chronicles">
                 <h2>Chronicles around Me</h2>
+
                 <div class="about-text">
                     <p>
-                        A "dear diary" spin-off, where I write down about incidents around me which are worth remembering. 
-                        These are not necessarily my own experiences, but also those of people around me. 
+                        A "dear diary" spin-off, where I write down about incidents around me which are worth remembering.
+                        These are not necessarily my own experiences, but also those of people around me.
                         This section functions as the inlet for me to enter my thoughts. These are personal and would be kept private, but I may choose to share some of them in the future.
                     </p>
+
+                    <div id="chronicle">
+                        <div id="chronicle-gate">
+                            <input type="password" id="chronicle-password" placeholder="Enter password" autocomplete="off">
+                            <button id="chronicle-unlock">Unlock</button>
+                            <p id="chronicle-gate-status"></p>
+                        </div>
+
+                        <div id="chronicle-content">
+                            <h3>Write a Chronicle</h3>
+
+                            <label for="chronicle-date">Date</label>
+                            <input type="date" id="chronicle-date">
+
+                            <label for="chronicle-title">Title</label>
+                            <input type="text" id="chronicle-title" autocomplete="off">
+
+                            <label for="chronicle-entry">Entry</label>
+                            <textarea id="chronicle-entry" placeholder="Write the incident or thought..."></textarea>
+
+                            <button id="chronicle-store">Save Chronicle</button>
+                            <p id="chronicle-write-status"></p>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
+
         <div id="footer"></div>
     </div>
+
     <script src="script.js"></script>
     <script src="timecapsule.js"></script>
+    <script src="chronicles.js"></script>
 </body>
 </html>

@@ -526,17 +526,112 @@ footer {
 }
 
 @media (max-width: 700px) {
-    #capsule {
-        max-width: 100%;
-    }
+#capsule {
+    max-width: 100%;
+}
 
-    #capsule-actions {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+#capsule-actions {
+    flex-direction: column;
+    align-items: flex-start;
+}
 
-    #capsule-actions button {
-        width: auto;
-    }
+#capsule-actions button {
+    width: auto;
+}
+
+/* =========================
+CHRONICLES
+========================= */
+
+#chronicles {
+    padding-top: 65px;
+    padding-bottom: 65px;
+}
+
+#chronicles .about-text {
+    max-width: 900px;
+    margin-top: 40px;
+}
+
+#chronicles .about-text p {
+    max-width: 850px;
+    margin-bottom: 24px;
+    color: var(--secondary);
+    font-family: "Roboto", sans-serif;
+    font-size: 17px;
+    line-height: 1.75;
+}
+
+#chronicle {
+    max-width: 850px;
+    margin-top: 35px;
+}
+
+#chronicle input,
+#chronicle textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px dashed #d4d4d4;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    font-family: "Roboto", sans-serif;
+    font-size: 15px;
+    outline: none;
+}
+
+#chronicle input:focus,
+#chronicle textarea:focus {
+    border-color: #999;
+}
+
+#chronicle input {
+    height: 46px;
+    padding: 0 13px;
+}
+
+#chronicle textarea {
+    height: 220px;
+    padding: 13px;
+    resize: none;
+}
+
+#chronicle label {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 7px;
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+}
+
+#chronicle button {
+    margin-top: 22px;
+    padding: 9px 17px;
+    border: 2px solid #ccc;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+#chronicle button:hover {
+    border-color: #888;
+}
+
+#chronicle-gate-status,
+#chronicle-write-status {
+    margin-top: 8px;
+    font-family: "Roboto", sans-serif;
+    font-size: 13px;
+}
+
+#chronicle-gate-status:empty,
+#chronicle-write-status:empty {
+    display: none;
+}
+
 }
         
