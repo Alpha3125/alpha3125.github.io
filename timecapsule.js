@@ -2,7 +2,8 @@
    SETTINGS
    ========================= */
 
-const CAPSULE_PASSWORD = "8917343235";
+const CAPSULE_PASSWORD = "35";
+const MAX_MESSAGE_LENGTH = 300; // Maximum message length in bytes
 const CAPSULE_API = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
 
 /* =========================
@@ -60,8 +61,11 @@ if (capsule) {
     }
 
     function updateMessageLength() {
-        const bytes = encoder.encode(messageInput.value);
-        messageLength.textContent = `Message length: ${bytes.length} bytes`;
+        const characters = Array.from(messageInput.value);
+        if (characters.length > MAX_MESSAGE_LENGTH) {
+            messageInput.value = characters.slice(0, MAX_MESSAGE_LENGTH).join("");
+        }
+        messageLength.textContent = `Message length: ${Array.from(messageInput.value).length} / ${MAX_MESSAGE_LENGTH} characters`;
     }
 
     function xorBytes(data, key1, key2) {
@@ -224,6 +228,14 @@ if (capsule) {
         searchResult.style.display = "block";
         setStatus(openStatus, "");
     });
+
+    const messageCharacters = Array.from(messageInput.value).length;
+    if (messageCharacters === 0) {
+        throw new Error("Please enter a message.");
+    }
+    if (messageCharacters > MAX_MESSAGE_LENGTH) {
+        throw new Error(`Message cannot exceed ${MAX_MESSAGE_LENGTH} characters.`);
+    }
 
     /* =========================
        MESSAGE / KEY GENERATION
