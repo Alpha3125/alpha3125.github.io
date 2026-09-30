@@ -311,6 +311,7 @@ footer {
     font-family: "Comfortaa", sans-serif;
     font-size: clamp(30px, 3.2vw, 42px);
     letter-spacing: -1.5px;
+    margin-bottom: 0;
 }
 
 #time-capsule .about-text {
@@ -324,31 +325,44 @@ footer {
     line-height: 1.65;
 }
 
+/* Main capsule container */
 #capsule {
     max-width: 850px;
-    margin-top: 45px;
+    margin-top: 38px;
 }
 
+/* Password gate */
+#capsule-gate {
+    max-width: 500px;
+}
+
+#capsule-gate p {
+    font-family: "Roboto", sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    margin: 0 0 10px;
+}
+
+#capsule-gate-status,
+#capsule-write-status,
+#capsule-open-status {
+    margin-top: 8px;
+    font-family: "Roboto", sans-serif;
+    font-size: 13px;
+}
+
+/* Inputs and textareas */
 #capsule input,
 #capsule textarea {
     width: 100%;
+    box-sizing: border-box;
     border: 2px dashed #d4d4d4;
     background: transparent;
     color: var(--text);
     font-family: "Roboto", sans-serif;
     font-size: 15px;
     outline: none;
-}
-
-#capsule input {
-    height: 46px;
-    padding: 0 14px;
-}
-
-#capsule textarea {
-    min-height: 120px;
-    padding: 14px;
-    resize: vertical;
+    border-radius: 0;
 }
 
 #capsule input:focus,
@@ -356,92 +370,129 @@ footer {
     border-color: #999;
 }
 
+/* Normal inputs */
+#capsule input {
+    height: 46px;
+    padding: 0 13px;
+}
+
+/* Textareas */
+#capsule textarea {
+    padding: 13px;
+}
+
+/* Message box */
+#capsule-message {
+    height: 160px;
+    resize: none;
+}
+
+/* Key boxes */
+#capsule-key-1,
+#capsule-key-2 {
+    height: 75px;
+    resize: none;
+    overflow-y: auto;
+}
+
+/* Ciphertext box */
+#capsule-ciphertext {
+    height: 110px;
+    resize: none;
+}
+
+/* Labels */
+#capsule label {
+    display: block;
+    margin-top: 19px;
+    margin-bottom: 7px;
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+}
+
+/* Message length */
+#capsule-message-length {
+    margin: 7px 0 0;
+    font-family: "Roboto", sans-serif;
+    font-size: 13px;
+}
+
+/* Buttons */
 #capsule button {
-    margin-top: 12px;
-    padding: 10px 18px;
-    border: 1px solid #ccc;
+    margin-top: 11px;
+    padding: 9px 17px;
+    border: 2px solid #ccc;
+    border-radius: 0;
     background: transparent;
     color: var(--text);
     font-family: "Roboto", sans-serif;
     font-size: 14px;
     cursor: pointer;
+    transition: border-color 0.2s ease;
 }
 
 #capsule button:hover {
-    background: #f5f5f5;
+    border-color: #888;
 }
 
+/* Generate keys */
+#capsule-generate-keys {
+    margin-top: 12px;
+}
+
+/* Final encryption button */
+#capsule-encrypt {
+    margin-top: 22px;
+}
+
+/* Write / Open selection buttons */
 #capsule-actions {
     display: flex;
-    gap: 15px;
-    margin-bottom: 40px;
-}
-
-#capsule-write,
-#capsule-open {
-    border-top: 1px solid var(--line);
-    padding-top: 35px;
-}
-
-#capsule-write h3,
-#capsule-open h3 {
-    font-family: "Comfortaa", sans-serif;
-    font-size: 25px;
-    font-weight: 500;
+    gap: 10px;
     margin-bottom: 28px;
 }
 
-#capsule label {
-    display: block;
-    margin: 22px 0 8px;
-    font-size: 14px;
+#capsule-actions button {
+    margin-top: 0;
 }
 
-#capsule-message {
-    width: 100%;
-    height: 400px;
-    resize: none;
+/* Sections */
+#capsule-write h3,
+#capsule-open h3 {
+    font-family: "Comfortaa", sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0 0 22px;
 }
 
-#capsule-message-length,
-#capsule-gate-status,
-#capsule-write-status,
-#capsule-open-status {
-    margin-top: 8px;
-    color: var(--secondary);
-    font-size: 13px;
-}
-
+/* Search result */
 #capsule-search-result {
-    margin-top: 35px;
-    padding-top: 30px;
-    border-top: 1px solid var(--line);
+    margin-top: 28px;
 }
 
-#capsule-ciphertext {
-    min-height: 150px;
-    font-family: monospace !important;
-    font-size: 13px !important;
-    word-break: break-all;
+/* Search button */
+#capsule-search {
+    margin-top: 12px;
 }
 
+/* Decrypt button */
+#capsule-decrypt {
+    margin-top: 18px;
+}
+
+/* Decrypted message */
 #capsule-message-result {
-    display: none;
-    margin-top: 35px;
-    padding-top: 30px;
-    border-top: 1px solid var(--line);
-    line-height: 1.75;
-    white-space: pre-wrap;
+    margin-top: 20px;
+    font-family: "Roboto", sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
 }
 
-@media (max-width: 700px) {
-    #capsule-actions {
-        flex-direction: column;
-    }
-
-    #capsule-actions button {
-        width: 100%;
-    }
+/* Status text */
+#capsule-gate-status:empty,
+#capsule-write-status:empty,
+#capsule-open-status:empty {
+    display: none;
 }
         
 }
