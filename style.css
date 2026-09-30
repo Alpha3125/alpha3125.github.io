@@ -301,23 +301,60 @@ footer {
 }
 
 .cv-dropdown {
-    margin-top: 25px;
+    margin-top: 22px;
 }
 
 .cv-dropdown summary {
-    display: inline-block;
     cursor: pointer;
     font-family: "Roboto", sans-serif;
-    font-size: 15px;
-    user-select: none;
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--text);
+    list-style: none;
+    display: inline-block;
+    transition: opacity 0.2s ease;
 }
 
-.cv-dropdown summary::marker {
-    font-size: 12px;
+.cv-dropdown summary::-webkit-details-marker {
+    display: none;
 }
 
-.cv-section {
-    margin-top: 20px;
+.cv-dropdown summary::before {
+    content: "▸";
+    display: inline-block;
+    margin-right: 7px;
+    transition: transform 0.25s ease;
+}
+
+.cv-dropdown[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.cv-dropdown summary:hover {
+    opacity: 0.65;
+}
+
+.cv-dropdown-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition:
+        grid-template-rows 0.45s ease,
+        opacity 0.3s ease,
+        transform 0.45s ease;
+}
+
+.cv-dropdown[open] .cv-dropdown-content {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cv-dropdown-content > .cv-section {
+    min-height: 0;
+    overflow: hidden;
+    margin-top: 18px;
 }
 
 .cv-section iframe {
