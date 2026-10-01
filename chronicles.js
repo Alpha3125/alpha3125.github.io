@@ -1,4 +1,3 @@
-const CHRONICLES_PASSWORD = "35";
 const CHRONICLES_API = "https://script.google.com/macros/s/AKfycbzg_A5BXWuQbjYW--Z9xekMJew_HWjujGQeTzQpk6ka_itHXAAm8q6kS5h7Dk8R7Jaz/exec";
 const chronicle = document.getElementById("chronicle");
 

@@ -2,7 +2,6 @@
    SETTINGS
    ========================= */
 
-const CAPSULE_PASSWORD = "35";
 const MAX_MESSAGE_LENGTH = 300; // Maximum message length in characters
 const CAPSULE_API = "https://script.google.com/macros/s/AKfycbzg_A5BXWuQbjYW--Z9xekMJew_HWjujGQeTzQpk6ka_itHXAAm8q6kS5h7Dk8R7Jaz/exec";
 
