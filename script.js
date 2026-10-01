@@ -19,10 +19,19 @@ const backgroundCanvas = document.getElementById("backgroundCanvas");
 const backgroundCtx = backgroundCanvas?.getContext("2d");
 const page = document.documentElement;
 
+const PATTERN_STORAGE_KEY = "voronoiPatternV2";
 const introNavigation = sessionStorage.getItem("introNavigation");
+const storedPattern = sessionStorage.getItem(PATTERN_STORAGE_KEY);
+const shouldReplay = introNavigation === "replay";
+
+if (shouldReplay) {
+    sessionStorage.removeItem(PATTERN_STORAGE_KEY);
+}
+
 if (introNavigation === "skip") {
     page.classList.add("no-intro");
 }
+
 sessionStorage.removeItem("introNavigation");
 
 document.querySelectorAll("[data-intro]").forEach(link => {
@@ -34,7 +43,10 @@ document.querySelectorAll("[data-intro]").forEach(link => {
     });
 });
 
-const runIntro = !!canvas && !!ctx && !page.classList.contains("no-intro");
+const runIntro = !!canvas &&
+    !!ctx &&
+    !page.classList.contains("no-intro") &&
+    (shouldReplay || !storedPattern);
 
 if (!backgroundCanvas || !backgroundCtx) {
     page.classList.add("intro-complete");
@@ -46,7 +58,6 @@ if (!backgroundCanvas || !backgroundCtx) {
     let devicePixelRatio = 1;
     let sites = [];
     let siteBlueprints = [];
-    const PATTERN_STORAGE_KEY = "voronoiPatternV2";
     let voronoiEdges = [];
     let resizeFrame;
 
@@ -92,9 +103,9 @@ if (!backgroundCanvas || !backgroundCtx) {
     function easeOutBack(progress) {
         const overshoot = 1.45;
         const shifted = progress - 1;
-        return 1
-            + (overshoot + 1) * Math.pow(shifted, 3)
-            + overshoot * Math.pow(shifted, 2);
+        return 1 +
+            (overshoot + 1) * Math.pow(shifted, 3) +
+            overshoot * Math.pow(shifted, 2);
     }
 
     function resizeCanvasElement(element, context) {
@@ -116,9 +127,9 @@ if (!backgroundCanvas || !backgroundCtx) {
         resizeCanvasElement(backgroundCanvas, backgroundCtx);
     }
 
-    /* =====================================================
-       RANDOM SITES IN A DISC
-       ===================================================== */
+/* =====================================================
+   RANDOM SITES IN A DISC
+   ===================================================== */
 
     function createSites() {
         const centre = { x: width / 2, y: height / 2 };
@@ -152,46 +163,37 @@ if (!backgroundCanvas || !backgroundCtx) {
     }
 
     function rememberSiteBlueprints() {
-    const scale = Math.min(width, height);
-    siteBlueprints = sites.map(site => ({
-        x: (site.x - width / 2) / scale,
-        y: (site.y - height / 2) / scale,
-        entranceDelay: site.entranceDelay
-    }));
-    sessionStorage.setItem(
-        PATTERN_STORAGE_KEY,
-        JSON.stringify(siteBlueprints)
-    );
-}
+        const scale = Math.min(width, height);
+        siteBlueprints = sites.map(site => ({
+            x: (site.x - width / 2) / scale,
+            y: (site.y - height / 2) / scale,
+            entranceDelay: site.entranceDelay
+        }));
+        sessionStorage.setItem(PATTERN_STORAGE_KEY, JSON.stringify(siteBlueprints));
+    }
 
     function restoreSiteBlueprints() {
         try {
-            const saved = JSON.parse(
-                sessionStorage.getItem(PATTERN_STORAGE_KEY)
-            );
-
+            const saved = JSON.parse(sessionStorage.getItem(PATTERN_STORAGE_KEY));
             if (!Array.isArray(saved) || saved.length !== SITE_COUNT) {
                 return false;
             }
-
             siteBlueprints = saved;
-
             const scale = Math.min(width, height);
             sites = siteBlueprints.map(site => ({
                 x: width / 2 + site.x * scale,
                 y: height / 2 + site.y * scale,
                 entranceDelay: site.entranceDelay
             }));
-
             return true;
         } catch {
             return false;
         }
     }
 
-    /* =====================================================
-       VORONOI CONSTRUCTION
-       ===================================================== */
+/* =====================================================
+   VORONOI CONSTRUCTION
+   ===================================================== */
 
     function clipCellToSite(cell, site, otherSite) {
         if (cell.length === 0) {
@@ -361,31 +363,18 @@ if (!backgroundCanvas || !backgroundCtx) {
         voronoiEdges = extractVoronoiEdges(cells);
     }
 
-    /* =====================================================
-       DRAWING
-       ===================================================== */
+/* =====================================================
+   DRAWING
+   ===================================================== */
 
     function strokeSegment(context, a, b, opacity) {
         if (opacity <= 0 || distance(a, b) < 0.5) {
             return;
         }
 
-        const alphaGradient = context.createLinearGradient(
-            a.x,
-            a.y,
-            b.x,
-            b.y
-        );
-
-        alphaGradient.addColorStop(
-            0,
-            `rgba(34, 34, 34, ${opacity})`
-        );
-
-        alphaGradient.addColorStop(
-            1,
-            `rgba(34, 34, 34, ${opacity * 0.18})`
-        );
+        const alphaGradient = context.createLinearGradient(a.x, a.y, b.x, b.y);
+        alphaGradient.addColorStop(0, `rgba(34, 34, 34, ${opacity})`);
+        alphaGradient.addColorStop(1, `rgba(34, 34, 34, ${opacity * 0.18})`);
 
         context.beginPath();
         context.moveTo(a.x, a.y);
@@ -398,9 +387,7 @@ if (!backgroundCanvas || !backgroundCtx) {
     }
 
     function drawVoronoiEdge(edge, progress, opacity) {
-        const localProgress = clamp(
-            (progress - edge.delay) / (1 - edge.delay)
-        );
+        const localProgress = clamp((progress - edge.delay) / (1 - edge.delay));
 
         if (localProgress <= 0) {
             return;
@@ -409,62 +396,30 @@ if (!backgroundCanvas || !backgroundCtx) {
         const growth = accelerate(localProgress);
 
         if (edge.direction === "both") {
-            strokeSegment(
-                ctx,
-                edge.a,
-                interpolate(edge.a, edge.b, growth / 2),
-                opacity
-            );
-
-            strokeSegment(
-                ctx,
-                edge.b,
-                interpolate(edge.b, edge.a, growth / 2),
-                opacity
-            );
-
+            strokeSegment(ctx, edge.a, interpolate(edge.a, edge.b, growth / 2), opacity);
+            strokeSegment(ctx, edge.b, interpolate(edge.b, edge.a, growth / 2), opacity);
             return;
         }
 
         const origin = isOnViewportBoundary(edge.a) ? edge.b : edge.a;
         const destination = origin === edge.a ? edge.b : edge.a;
 
-        strokeSegment(
-            ctx,
-            origin,
-            interpolate(origin, destination, growth),
-            opacity
-        );
+        strokeSegment(ctx, origin, interpolate(origin, destination, growth), opacity);
     }
 
     function drawSite(site, elapsed, fadeProgress) {
-        const appearanceProgress = clamp(
-            (elapsed - site.entranceDelay) / 740
-        );
-
+        const appearanceProgress = clamp((elapsed - site.entranceDelay) / 740);
         const sproutProgress = easeOutBack(appearanceProgress);
         const radius = POINT_RADIUS * sproutProgress;
-
-        const fadeOut = 1 - clamp(
-            (fadeProgress - 0.8) / 0.2
-        );
-
-        const opacity = 0.78 *
-            clamp(appearanceProgress * 3) *
-            fadeOut;
+        const fadeOut = 1 - clamp((fadeProgress - 0.8) / 0.2);
+        const opacity = 0.78 * clamp(appearanceProgress * 3) * fadeOut;
 
         if (radius <= 0 || opacity <= 0) {
             return;
         }
 
         ctx.beginPath();
-        ctx.arc(
-            site.x,
-            site.y,
-            radius,
-            0,
-            Math.PI * 2
-        );
+        ctx.arc(site.x, site.y, radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(34, 34, 34, ${opacity})`;
         ctx.fill();
     }
@@ -474,13 +429,7 @@ if (!backgroundCanvas || !backgroundCtx) {
             return;
         }
 
-        backgroundCtx.clearRect(
-            0,
-            0,
-            width,
-            height
-        );
-
+        backgroundCtx.clearRect(0, 0, width, height);
         backgroundCtx.lineWidth = 1;
         backgroundCtx.lineCap = "round";
         backgroundCtx.lineJoin = "round";
@@ -494,9 +443,9 @@ if (!backgroundCanvas || !backgroundCtx) {
         }
     }
 
-    /* =====================================================
-       ANIMATION
-       ===================================================== */
+/* =====================================================
+   ANIMATION
+   ===================================================== */
 
     let introFinished = false;
     const startTime = performance.now();
@@ -545,9 +494,9 @@ if (!backgroundCanvas || !backgroundCtx) {
         requestAnimationFrame(animate);
     }
 
-    /* =====================================================
-       RESIZE
-       ===================================================== */
+/* =====================================================
+   RESIZE
+   ===================================================== */
 
     function handleResize() {
         window.cancelAnimationFrame(resizeFrame);
@@ -566,24 +515,16 @@ if (!backgroundCanvas || !backgroundCtx) {
         });
     }
 
-    /* =====================================================
-       INITIAL SETUP
-       ===================================================== */
+/* =====================================================
+   INITIAL SETUP
+   ===================================================== */
 
     resizeCanvases();
-
-    const navigationEntry = performance.getEntriesByType("navigation")[0];
-    const isReload = navigationEntry?.type === "reload";
-
-    if (isReload) {
-        sessionStorage.removeItem(PATTERN_STORAGE_KEY);
-    }
-
     generatePattern(false);
 
-    /* =====================================================
-       START INTRO / STATIC BACKGROUND
-       ===================================================== */
+/* =====================================================
+   START INTRO / STATIC BACKGROUND
+   ===================================================== */
 
     if (runIntro) {
         window.addEventListener("resize", handleResize);
