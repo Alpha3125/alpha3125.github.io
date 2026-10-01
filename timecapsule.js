@@ -174,19 +174,21 @@ if (capsule) {
 
         const text = await response.text();
 
+        let result;
+
         try {
-            const result = JSON.parse(text);
-
-            if (result.ok === false) {
-                throw new Error(
-                    result.error || "The server rejected the capsule."
-                );
-            }
-
-            return result;
+            result = JSON.parse(text);
         } catch {
-            return { ok: true };
+            throw new Error("The capsule server returned an invalid response.");
         }
+
+        if (result.ok === false) {
+            throw new Error(
+                result.error || "The server rejected the capsule."
+            );
+        }
+
+        return result;
     }
 
     async function searchCapsule(name) {
