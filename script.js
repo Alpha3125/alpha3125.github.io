@@ -525,6 +525,10 @@ if (!backgroundCanvas || !backgroundCtx) {
         }
     } else {
         drawBackground();
+        if (canvas) {
+            canvas.remove();
+        }
+        page.classList.remove("intro-active");
         page.classList.add("intro-complete");
         window.addEventListener("resize", handleBackgroundResize);
     }
