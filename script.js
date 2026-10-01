@@ -9,7 +9,6 @@ fetch("footer.html")
         document.getElementById("year").textContent = new Date().getFullYear();
     });
 
-
 /* =====================================================
    VORONOI INTRO
    ===================================================== */
@@ -25,6 +24,7 @@ if (introNavigation === "skip") {
     page.classList.add("no-intro");
 }
 sessionStorage.removeItem("introNavigation");
+
 document.querySelectorAll("[data-intro]").forEach(link => {
     link.addEventListener("click", () => {
         sessionStorage.setItem(
@@ -45,6 +45,8 @@ if (!backgroundCanvas || !backgroundCtx) {
     let height = 0;
     let devicePixelRatio = 1;
     let sites = [];
+    let siteBlueprints = [];
+    const PATTERN_STORAGE_KEY = "voronoiPatternV2";
     let voronoiEdges = [];
     let resizeFrame;
 
@@ -52,7 +54,6 @@ if (!backgroundCanvas || !backgroundCtx) {
     const DISC_RADIUS_RATIO = 0.23;
     const MIN_SITE_DISTANCE = 34;
     const VIEWPORT_INSET = 1;
-    const PATTERN_STORAGE_KEY = "voronoiPatternV1";
 
     const DOT_TIME = 1050;
     const ROUTE_TIME = 1250;
@@ -60,6 +61,7 @@ if (!backgroundCanvas || !backgroundCtx) {
 
     const LINE_WIDTH = 1.5;
     const POINT_RADIUS = 4;
+
     const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
     ).matches;
@@ -90,7 +92,6 @@ if (!backgroundCanvas || !backgroundCtx) {
     function easeOutBack(progress) {
         const overshoot = 1.45;
         const shifted = progress - 1;
-
         return 1
             + (overshoot + 1) * Math.pow(shifted, 3)
             + overshoot * Math.pow(shifted, 2);
@@ -100,7 +101,6 @@ if (!backgroundCanvas || !backgroundCtx) {
         if (!element || !context) {
             return;
         }
-
         element.width = Math.round(width * devicePixelRatio);
         element.height = Math.round(height * devicePixelRatio);
         element.style.width = `${width}px`;
@@ -112,14 +112,13 @@ if (!backgroundCanvas || !backgroundCtx) {
         devicePixelRatio = window.devicePixelRatio || 1;
         width = window.innerWidth;
         height = window.innerHeight;
-
         resizeCanvasElement(canvas, ctx);
         resizeCanvasElement(backgroundCanvas, backgroundCtx);
     }
 
-    /* -------------------------------------------------
+    /* =====================================================
        RANDOM SITES IN A DISC
-       ------------------------------------------------- */
+       ===================================================== */
 
     function createSites() {
         const centre = { x: width / 2, y: height / 2 };
@@ -130,7 +129,6 @@ if (!backgroundCanvas || !backgroundCtx) {
         function makeSite() {
             const angle = random(0, Math.PI * 2);
             const distanceFromCentre = radius * Math.sqrt(Math.random());
-
             return {
                 x: centre.x + Math.cos(angle) * distanceFromCentre,
                 y: centre.y + Math.sin(angle) * distanceFromCentre,
@@ -141,14 +139,11 @@ if (!backgroundCanvas || !backgroundCtx) {
         while (generatedSites.length < SITE_COUNT && attempts < SITE_COUNT * 300) {
             attempts += 1;
             const site = makeSite();
-
             if (generatedSites.every(other => distance(site, other) >= MIN_SITE_DISTANCE)) {
                 generatedSites.push(site);
             }
         }
 
-        // A small viewport can make the separation rule impossible to satisfy.
-        // Fill any remaining places rather than leaving the network incomplete.
         while (generatedSites.length < SITE_COUNT) {
             generatedSites.push(makeSite());
         }
@@ -156,24 +151,33 @@ if (!backgroundCanvas || !backgroundCtx) {
         return generatedSites;
     }
 
-    function saveSites() {
+    function rememberSiteBlueprints() {
     const scale = Math.min(width, height);
-    localStorage.setItem(PATTERN_STORAGE_KEY, JSON.stringify(
-        sites.map(site => ({
-            x: (site.x - width / 2) / scale,
-            y: (site.y - height / 2) / scale,
-            entranceDelay: site.entranceDelay
-        }))
-    ));
+    siteBlueprints = sites.map(site => ({
+        x: (site.x - width / 2) / scale,
+        y: (site.y - height / 2) / scale,
+        entranceDelay: site.entranceDelay
+    }));
+    sessionStorage.setItem(
+        PATTERN_STORAGE_KEY,
+        JSON.stringify(siteBlueprints)
+    );
 }
 
-    function loadSites() {
+    function restoreSiteBlueprints() {
         try {
-            const saved = JSON.parse(localStorage.getItem(PATTERN_STORAGE_KEY));
-            if (!Array.isArray(saved) || saved.length !== SITE_COUNT) return false;
+            const saved = JSON.parse(
+                sessionStorage.getItem(PATTERN_STORAGE_KEY)
+            );
+
+            if (!Array.isArray(saved) || saved.length !== SITE_COUNT) {
+                return false;
+            }
+
+            siteBlueprints = saved;
 
             const scale = Math.min(width, height);
-            sites = saved.map(site => ({
+            sites = siteBlueprints.map(site => ({
                 x: width / 2 + site.x * scale,
                 y: height / 2 + site.y * scale,
                 entranceDelay: site.entranceDelay
@@ -185,12 +189,9 @@ if (!backgroundCanvas || !backgroundCtx) {
         }
     }
 
-    /* -------------------------------------------------
+    /* =====================================================
        VORONOI CONSTRUCTION
-
-       Each cell starts as the viewport and is clipped by
-       the perpendicular bisector for every other site.
-       ------------------------------------------------- */
+       ===================================================== */
 
     function clipCellToSite(cell, site, otherSite) {
         if (cell.length === 0) {
@@ -201,16 +202,18 @@ if (!backgroundCanvas || !backgroundCtx) {
             x: (site.x + otherSite.x) / 2,
             y: (site.y + otherSite.y) / 2
         };
+
         const normal = {
             x: otherSite.x - site.x,
             y: otherSite.y - site.y
         };
-        const signedDistance = point => (
-            (point.x - midpoint.x) * normal.x
-            + (point.y - midpoint.y) * normal.y
-        );
-        const clipped = [];
 
+        const signedDistance = point => (
+            (point.x - midpoint.x) * normal.x +
+            (point.y - midpoint.y) * normal.y
+        );
+
+        const clipped = [];
         let previous = cell[cell.length - 1];
         let previousDistance = signedDistance(previous);
 
@@ -267,18 +270,16 @@ if (!backgroundCanvas || !backgroundCtx) {
         );
         const first = pointKey(a);
         const second = pointKey(b);
-
         return first < second ? `${first}|${second}` : `${second}|${first}`;
     }
 
     function isOnViewportBoundary(point) {
         const tolerance = 1.5;
-
         return (
-            point.x <= VIEWPORT_INSET + tolerance
-            || point.x >= width - VIEWPORT_INSET - tolerance
-            || point.y <= VIEWPORT_INSET + tolerance
-            || point.y >= height - VIEWPORT_INSET - tolerance
+            point.x <= VIEWPORT_INSET + tolerance ||
+            point.x >= width - VIEWPORT_INSET - tolerance ||
+            point.y <= VIEWPORT_INSET + tolerance ||
+            point.y >= height - VIEWPORT_INSET - tolerance
         );
     }
 
@@ -310,8 +311,6 @@ if (!backgroundCanvas || !backgroundCtx) {
         }
 
         return [...foundEdges.values()]
-            // A cell edge that belongs to one cell is just the artificial
-            // viewport border. A real Voronoi edge is shared by two cells.
             .filter(edge => edge.count >= 2)
             .map(edge => {
                 const aOnBoundary = isOnViewportBoundary(edge.a);
@@ -321,21 +320,27 @@ if (!backgroundCanvas || !backgroundCtx) {
                     return null;
                 }
 
-                const centre = { x: width / 2, y: height / 2 };
+                const centre = {
+                    x: width / 2,
+                    y: height / 2
+                };
+
                 const vertices = [edge.a, edge.b].filter(
                     point => !isOnViewportBoundary(point)
                 );
+
                 const nearestVertexDistance = Math.min(
                     ...vertices.map(point => distance(point, centre))
                 );
+
                 const radialDelay = clamp(
                     nearestVertexDistance / (Math.min(width, height) * 0.52)
                 ) * 0.32;
+
                 const boundaryDelay = aOnBoundary || bOnBoundary ? 0.1 : 0;
 
                 return {
                     ...edge,
-                    // Resolve the central junctions before sending edges outward.
                     delay: Math.min(
                         radialDelay + boundaryDelay + random(0, 0.06),
                         0.65
@@ -346,30 +351,41 @@ if (!backgroundCanvas || !backgroundCtx) {
             .filter(Boolean);
     }
 
-    function generatePattern() {
-        if (!loadSites()) {
+    function generatePattern(newPattern = false) {
+        if (newPattern || !restoreSiteBlueprints()) {
             sites = createSites();
-            saveSites();
+            rememberSiteBlueprints();
         }
 
         const cells = buildVoronoiCells(sites);
         voronoiEdges = extractVoronoiEdges(cells);
     }
 
-    /* -------------------------------------------------
+    /* =====================================================
        DRAWING
-       ------------------------------------------------- */
+       ===================================================== */
 
     function strokeSegment(context, a, b, opacity) {
         if (opacity <= 0 || distance(a, b) < 0.5) {
             return;
         }
 
-        // The leading end of each growing edge becomes progressively lighter.
-        // It replaces the previous two-stroke, outlined treatment.
-        const alphaGradient = context.createLinearGradient(a.x, a.y, b.x, b.y);
-        alphaGradient.addColorStop(0, `rgba(34, 34, 34, ${opacity})`);
-        alphaGradient.addColorStop(1, `rgba(34, 34, 34, ${opacity * 0.18})`);
+        const alphaGradient = context.createLinearGradient(
+            a.x,
+            a.y,
+            b.x,
+            b.y
+        );
+
+        alphaGradient.addColorStop(
+            0,
+            `rgba(34, 34, 34, ${opacity})`
+        );
+
+        alphaGradient.addColorStop(
+            1,
+            `rgba(34, 34, 34, ${opacity * 0.18})`
+        );
 
         context.beginPath();
         context.moveTo(a.x, a.y);
@@ -393,34 +409,62 @@ if (!backgroundCanvas || !backgroundCtx) {
         const growth = accelerate(localProgress);
 
         if (edge.direction === "both") {
-            // Edges that connect two Voronoi vertices grow from both junctions.
-            strokeSegment(ctx, edge.a, interpolate(edge.a, edge.b, growth / 2), opacity);
-            strokeSegment(ctx, edge.b, interpolate(edge.b, edge.a, growth / 2), opacity);
+            strokeSegment(
+                ctx,
+                edge.a,
+                interpolate(edge.a, edge.b, growth / 2),
+                opacity
+            );
+
+            strokeSegment(
+                ctx,
+                edge.b,
+                interpolate(edge.b, edge.a, growth / 2),
+                opacity
+            );
+
             return;
         }
 
-        // A clipped, unbounded Voronoi edge grows from its interior vertex
-        // toward the edge of the viewport.
         const origin = isOnViewportBoundary(edge.a) ? edge.b : edge.a;
         const destination = origin === edge.a ? edge.b : edge.a;
-        strokeSegment(ctx, origin, interpolate(origin, destination, growth), opacity);
+
+        strokeSegment(
+            ctx,
+            origin,
+            interpolate(origin, destination, growth),
+            opacity
+        );
     }
 
     function drawSite(site, elapsed, fadeProgress) {
         const appearanceProgress = clamp(
             (elapsed - site.entranceDelay) / 740
         );
+
         const sproutProgress = easeOutBack(appearanceProgress);
         const radius = POINT_RADIUS * sproutProgress;
-        const fadeOut = 1 - clamp((fadeProgress - 0.8) / 0.2);
-        const opacity = 0.78 * clamp(appearanceProgress * 3) * fadeOut;
+
+        const fadeOut = 1 - clamp(
+            (fadeProgress - 0.8) / 0.2
+        );
+
+        const opacity = 0.78 *
+            clamp(appearanceProgress * 3) *
+            fadeOut;
 
         if (radius <= 0 || opacity <= 0) {
             return;
         }
 
         ctx.beginPath();
-        ctx.arc(site.x, site.y, radius, 0, Math.PI * 2);
+        ctx.arc(
+            site.x,
+            site.y,
+            radius,
+            0,
+            Math.PI * 2
+        );
         ctx.fillStyle = `rgba(34, 34, 34, ${opacity})`;
         ctx.fill();
     }
@@ -430,7 +474,13 @@ if (!backgroundCanvas || !backgroundCtx) {
             return;
         }
 
-        backgroundCtx.clearRect(0, 0, width, height);
+        backgroundCtx.clearRect(
+            0,
+            0,
+            width,
+            height
+        );
+
         backgroundCtx.lineWidth = 1;
         backgroundCtx.lineCap = "round";
         backgroundCtx.lineJoin = "round";
@@ -444,9 +494,9 @@ if (!backgroundCanvas || !backgroundCtx) {
         }
     }
 
-    /* -------------------------------------------------
+    /* =====================================================
        ANIMATION
-       ------------------------------------------------- */
+       ===================================================== */
 
     let introFinished = false;
     const startTime = performance.now();
@@ -495,11 +545,15 @@ if (!backgroundCanvas || !backgroundCtx) {
         requestAnimationFrame(animate);
     }
 
+    /* =====================================================
+       RESIZE
+       ===================================================== */
+
     function handleResize() {
         window.cancelAnimationFrame(resizeFrame);
         resizeFrame = window.requestAnimationFrame(() => {
             resizeCanvases();
-            generatePattern();
+            generatePattern(false);
         });
     }
 
@@ -507,13 +561,29 @@ if (!backgroundCanvas || !backgroundCtx) {
         window.cancelAnimationFrame(resizeFrame);
         resizeFrame = window.requestAnimationFrame(() => {
             resizeCanvases();
-            generatePattern();
+            generatePattern(false);
             drawBackground();
         });
     }
 
+    /* =====================================================
+       INITIAL SETUP
+       ===================================================== */
+
     resizeCanvases();
-    generatePattern();
+
+    const navigationEntry = performance.getEntriesByType("navigation")[0];
+    const isReload = navigationEntry?.type === "reload";
+
+    if (isReload) {
+        sessionStorage.removeItem(PATTERN_STORAGE_KEY);
+    }
+
+    generatePattern(false);
+
+    /* =====================================================
+       START INTRO / STATIC BACKGROUND
+       ===================================================== */
 
     if (runIntro) {
         window.addEventListener("resize", handleResize);
@@ -525,9 +595,11 @@ if (!backgroundCanvas || !backgroundCtx) {
         }
     } else {
         drawBackground();
+
         if (canvas) {
             canvas.remove();
         }
+
         page.classList.remove("intro-active");
         page.classList.add("intro-complete");
         window.addEventListener("resize", handleBackgroundResize);
