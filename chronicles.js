@@ -1,5 +1,5 @@
 const CHRONICLES_PASSWORD = "35";
-const CHRONICLES_API = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+const CHRONICLES_API = "https://script.google.com/macros/s/AKfycbzg_A5BXWuQbjYW--Z9xekMJew_HWjujGQeTzQpk6ka_itHXAAm8q6kS5h7Dk8R7Jaz/exec";
 const chronicle = document.getElementById("chronicle");
 
 if (chronicle) {
@@ -48,9 +48,11 @@ if (chronicle) {
             if (!date) {
                 throw new Error("Please select a date.");
             }
+
             if (!title) {
                 throw new Error("Please enter a title.");
             }
+
             if (!entry) {
                 throw new Error("Please write an entry.");
             }
@@ -80,14 +82,21 @@ if (chronicle) {
             try {
                 result = JSON.parse(text);
             } catch {
-                result = { ok: true };
+                throw new Error("The chronicle server returned an invalid response.");
             }
 
             if (result.ok === false) {
-                throw new Error(result.error || "The server rejected the chronicle.");
+                throw new Error(
+                    result.error || "The server rejected the chronicle."
+                );
             }
 
-            setStatus(writeStatus, "Chronicle saved successfully.", true);
+            setStatus(
+                writeStatus,
+                "Chronicle saved successfully.",
+                true
+            );
+
             titleInput.value = "";
             entryInput.value = "";
         } catch (error) {
