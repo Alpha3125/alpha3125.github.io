@@ -3,14 +3,15 @@
    ========================= */
 
 const CAPSULE_PASSWORD = "35";
-const MAX_MESSAGE_LENGTH = 300; // Maximum message length in bytes
-const CAPSULE_API = "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL";
+const MAX_MESSAGE_LENGTH = 300; // Maximum message length in characters
+const CAPSULE_API = "https://script.google.com/macros/s/AKfycbzg_A5BXWuQbjYW--Z9xekMJew_HWjujGQeTzQpk6ka_itHXAAm8q6kS5h7Dk8R7Jaz/exec";
 
 /* =========================
    ELEMENTS
    ========================= */
 
 const capsule = document.getElementById("capsule");
+
 if (capsule) {
     const gate = document.getElementById("capsule-gate");
     const gatePassword = document.getElementById("capsule-password");
@@ -31,6 +32,7 @@ if (capsule) {
     const key2Input = document.getElementById("capsule-key-2");
     const generateKeys = document.getElementById("capsule-generate-keys");
     const nameInput = document.getElementById("capsule-name");
+    const openingDateInput = document.getElementById("capsule-opening-date");
     const encryptButton = document.getElementById("capsule-encrypt");
     const writeStatus = document.getElementById("capsule-write-status");
 
@@ -61,27 +63,30 @@ if (capsule) {
     }
 
     function updateMessageLength() {
-    const length = Array.from(messageInput.value).length;
-    messageLength.textContent = `Message length (Max ${MAX_MESSAGE_LENGTH} characters): ${length} / ${MAX_MESSAGE_LENGTH}`;
+        const length = Array.from(messageInput.value).length;
+        messageLength.textContent = `Message length (Max ${MAX_MESSAGE_LENGTH} characters): ${length} / ${MAX_MESSAGE_LENGTH}`;
 
-    if (length > MAX_MESSAGE_LENGTH) {
-        messageLength.style.color = "#b33";
-        messageLength.textContent += " — Message is too long.";
-    } else {
-        messageLength.style.color = "";
+        if (length > MAX_MESSAGE_LENGTH) {
+            messageLength.style.color = "#b33";
+            messageLength.textContent += " — Message is too long.";
+        } else {
+            messageLength.style.color = "";
         }
     }
 
     function xorBytes(data, key1, key2) {
         const result = new Uint8Array(data.length);
+
         for (let i = 0; i < data.length; i++) {
             result[i] = data[i] ^ key1[i] ^ key2[i];
         }
+
         return result;
     }
 
     function parseKey(value, expectedLength) {
         const parts = value.trim().split(/[\s,]+/).filter(Boolean);
+
         if (parts.length !== expectedLength) {
             throw new Error(`Key must contain exactly ${expectedLength} numbers.`);
         }
@@ -148,12 +153,14 @@ if (capsule) {
        API
        ========================= */
 
-    async function storeCapsule(name, ciphertext, hash) {
+    async function storeCapsule(name, ciphertext, hash, openingDate) {
         const form = new FormData();
+
         form.append("action", "store");
         form.append("name", name);
         form.append("ciphertext", ciphertext);
         form.append("hash", hash);
+        form.append("openingDate", openingDate);
         form.append("created", new Date().toISOString());
 
         const response = await fetch(CAPSULE_API, {
@@ -169,9 +176,13 @@ if (capsule) {
 
         try {
             const result = JSON.parse(text);
+
             if (result.ok === false) {
-                throw new Error(result.error || "The server rejected the capsule.");
+                throw new Error(
+                    result.error || "The server rejected the capsule."
+                );
             }
+
             return result;
         } catch {
             return { ok: true };
@@ -179,7 +190,8 @@ if (capsule) {
     }
 
     async function searchCapsule(name) {
-        const url = `${CAPSULE_API}?action=search&name=${encodeURIComponent(name)}`;
+        const url =
+            `${CAPSULE_API}?action=search&name=${encodeURIComponent(name)}`;
 
         const response = await fetch(url);
 
@@ -248,13 +260,23 @@ if (capsule) {
         }
 
         if (length > MAX_MESSAGE_LENGTH) {
-            setStatus(writeStatus, `Message cannot exceed ${MAX_MESSAGE_LENGTH} characters.`);
+            setStatus(
+                writeStatus,
+                `Message cannot exceed ${MAX_MESSAGE_LENGTH} characters.`
+            );
             return;
         }
 
-        key1Input.value = keyToString(generateKey(encoder.encode(messageInput.value).length));
-        key2Input.value = keyToString(generateKey(encoder.encode(messageInput.value).length));
-        setStatus(writeStatus, `Generated keys for ${length} characters.`, true);
+        const byteLength = encoder.encode(messageInput.value).length;
+
+        key1Input.value = keyToString(generateKey(byteLength));
+        key2Input.value = keyToString(generateKey(byteLength));
+
+        setStatus(
+            writeStatus,
+            `Generated keys for ${length} characters.`,
+            true
+        );
     });
 
     /* =========================
@@ -263,17 +285,22 @@ if (capsule) {
 
     encryptButton.addEventListener("click", async () => {
         try {
-            const messageLengthInCharacters = Array.from(messageInput.value).length;
+            const messageLengthInCharacters =
+                Array.from(messageInput.value).length;
 
             if (messageLengthInCharacters === 0) {
                 throw new Error("Please enter a message.");
             }
 
             if (messageLengthInCharacters > MAX_MESSAGE_LENGTH) {
-                throw new Error(`Message cannot exceed ${MAX_MESSAGE_LENGTH} characters.`);
+                throw new Error(
+                    `Message cannot exceed ${MAX_MESSAGE_LENGTH} characters.`
+                );
             }
+
             const message = messageInput.value;
             const name = nameInput.value.trim();
+            const openingDate = openingDateInput.value;
             const messageBytes = encoder.encode(message);
 
             if (messageBytes.length === 0) {
@@ -284,22 +311,46 @@ if (capsule) {
                 throw new Error("Please enter the person's name.");
             }
 
-            const key1 = parseKey(key1Input.value, messageBytes.length);
-            const key2 = parseKey(key2Input.value, messageBytes.length);
-            const ciphertext = xorBytes(messageBytes, key1, key2);
+            if (!openingDate) {
+                throw new Error("Please select a promised opening date.");
+            }
+
+            const key1 = parseKey(
+                key1Input.value,
+                messageBytes.length
+            );
+
+            const key2 = parseKey(
+                key2Input.value,
+                messageBytes.length
+            );
+
+            const ciphertext = xorBytes(
+                messageBytes,
+                key1,
+                key2
+            );
+
             const encodedCiphertext = bytesToBase64(ciphertext);
             const hash = await hashBytes(messageBytes);
 
             encryptButton.disabled = true;
             setStatus(writeStatus, "Encrypting and storing...");
 
-            await storeCapsule(name, encodedCiphertext, hash);
+            await storeCapsule(
+                name,
+                encodedCiphertext,
+                hash,
+                openingDate
+            );
 
             setStatus(
                 writeStatus,
                 "Capsule stored successfully. Save both keys somewhere safe.",
                 true
             );
+
+            openingDateInput.value = "";
         } catch (error) {
             setStatus(writeStatus, error.message);
         } finally {
@@ -321,14 +372,31 @@ if (capsule) {
 
             searchButton.disabled = true;
             messageResult.style.display = "none";
+            ciphertextOutput.value = "";
+            currentCiphertext = null;
+            currentHash = null;
+
             setStatus(openStatus, "Searching...");
 
             const result = await searchCapsule(name);
 
-            if (!result || !result.found || !result.ciphertext) {
-                currentCiphertext = null;
-                currentHash = null;
-                ciphertextOutput.value = "";
+            if (!result || result.ok === false) {
+                setStatus(
+                    openStatus,
+                    result?.error || "No capsule found for that name."
+                );
+                return;
+            }
+
+            if (!result.available) {
+                setStatus(
+                    openStatus,
+                    `This capsule cannot be opened yet. Promised opening date: ${result.openingDate}`
+                );
+                return;
+            }
+
+            if (!result.ciphertext) {
                 setStatus(openStatus, "No capsule found for that name.");
                 return;
             }
@@ -337,7 +405,12 @@ if (capsule) {
             currentHash = result.hash || null;
 
             ciphertextOutput.value = currentCiphertext;
-            setStatus(openStatus, "Capsule found. Enter both keys.", true);
+
+            setStatus(
+                openStatus,
+                "Capsule found. Enter both keys.",
+                true
+            );
         } catch (error) {
             setStatus(openStatus, error.message);
         } finally {
@@ -356,15 +429,30 @@ if (capsule) {
             }
 
             const ciphertext = base64ToBytes(currentCiphertext);
-            const key1 = parseKey(decryptKey1.value, ciphertext.length);
-            const key2 = parseKey(decryptKey2.value, ciphertext.length);
-            const messageBytes = xorBytes(ciphertext, key1, key2);
+
+            const key1 = parseKey(
+                decryptKey1.value,
+                ciphertext.length
+            );
+
+            const key2 = parseKey(
+                decryptKey2.value,
+                ciphertext.length
+            );
+
+            const messageBytes = xorBytes(
+                ciphertext,
+                key1,
+                key2
+            );
 
             if (currentHash) {
                 const calculatedHash = await hashBytes(messageBytes);
 
                 if (calculatedHash !== currentHash) {
-                    throw new Error("The two keys do not match this capsule.");
+                    throw new Error(
+                        "The two keys do not match this capsule."
+                    );
                 }
             }
 
@@ -373,9 +461,15 @@ if (capsule) {
             messageResult.style.display = "block";
             messageResult.textContent = "";
             messageResult.style.whiteSpace = "pre-wrap";
-            messageResult.appendChild(document.createTextNode(message));
+            messageResult.appendChild(
+                document.createTextNode(message)
+            );
 
-            setStatus(openStatus, "Capsule successfully decrypted.", true);
+            setStatus(
+                openStatus,
+                "Capsule successfully decrypted.",
+                true
+            );
         } catch (error) {
             messageResult.style.display = "none";
             setStatus(openStatus, error.message);

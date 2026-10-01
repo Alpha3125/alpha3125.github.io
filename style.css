@@ -1,19 +1,16 @@
 /* =========================
    GENERAL
    ========================= */
-
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
-
 html,
 body {
     width: 100%;
     min-height: 100%;
 }
-
 :root {
     --background: #ffffff;
     --text: #111111;
@@ -21,18 +18,15 @@ body {
     --line: #e8e8e8;
     --canvas-bg: #ffffff;
 }
-
 body {
     font-family: "Roboto", sans-serif;
     background: var(--background);
     color: var(--text);
     overflow-x: hidden;
 }
-
 /* =========================
    INTRO / PAGE REVEAL
    ========================= */
-
 #backgroundCanvas {
     position: fixed;
     inset: 0;
@@ -44,12 +38,10 @@ body {
     opacity: 0;
     transition: opacity 600ms ease;
 }
-
 html.intro-transition #backgroundCanvas,
 html.intro-complete #backgroundCanvas {
     opacity: 1;
 }
-
 #introCanvas {
     position: fixed;
     inset: 0;
@@ -62,11 +54,9 @@ html.intro-complete #backgroundCanvas {
     opacity: 1;
     transition: opacity 700ms ease;
 }
-
 #introCanvas.is-fading {
     opacity: 0;
 }
-
 #website {
     position: relative;
     z-index: 1;
@@ -74,17 +64,14 @@ html.intro-complete #backgroundCanvas {
     transform: translateY(0);
     transition: opacity 600ms ease, transform 600ms ease;
 }
-
 html.js:not(.intro-complete) #website {
     visibility: hidden;
     opacity: 0;
     transform: translateY(12px);
 }
-
 html.intro-active {
     overflow: hidden;
 }
-
 @media (prefers-reduced-motion: reduce) {
     #backgroundCanvas,
     #introCanvas,
@@ -92,11 +79,9 @@ html.intro-active {
         transition-duration: 1ms;
     }
 }
-
 /* =========================
    NAVIGATION
    ========================= */
-
 nav {
     height: 80px;
     display: flex;
@@ -106,35 +91,29 @@ nav {
     border-bottom: 1px solid var(--line);
     background: transparent;
 }
-
 .logo {
     font-family: "Comfortaa", sans-serif;
     font-size: 17px;
     font-weight: 700;
     letter-spacing: 1px;
 }
-
 .nav-links {
     display: flex;
     align-items: center;
     gap: 32px;
 }
-
 .nav-links a {
     text-decoration: none;
     color: var(--text);
     font-size: 14px;
     transition: opacity 200ms ease;
 }
-
 .nav-links a:hover {
     opacity: 0.55;
 }
-
 /* =========================
    HERO
    ========================= */
-
 .hero {
     min-height: 62vh;
     display: flex;
@@ -144,7 +123,6 @@ nav {
     text-align: center;
     padding: 80px 7%;
 }
-
 .hero h1 {
     font-family: "Comfortaa", sans-serif;
     font-size: clamp(60px, 9vw, 110px);
@@ -152,31 +130,25 @@ nav {
     letter-spacing: -5px;
     line-height: 1;
 }
-
 .hero p {
     color: var(--secondary);
 }
-
 .hero p:first-of-type {
     margin-bottom: 22px;
     font-size: 17px;
 }
-
 .hero p:last-of-type {
     margin-top: 24px;
     font-size: 17px;
 }
-
 /* =========================
    CONTENT
    ========================= */
-
 .content {
     max-width: 1350px;
     margin: 0 auto;
     padding: 80px 3%;
 }
-
 .content h2 {
     font-family: "Comfortaa", sans-serif;
     font-size: clamp(34px, 4vw, 52px);
@@ -184,16 +156,13 @@ nav {
     letter-spacing: -2px;
     line-height: 1.1;
 }
-
 .about-section {
     border-top: 1px solid var(--line);
 }
-
 .about-text {
     max-width: 900px;
     margin-top: 45px;
 }
-
 .about-text p {
     max-width: 850px;
     margin-bottom: 24px;
@@ -201,11 +170,9 @@ nav {
     font-size: 17px;
     line-height: 1.75;
 }
-
 .interests-section {
     border-top: 1px solid var(--line);
 }
-
 .interests-section ul {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -217,17 +184,14 @@ nav {
     font-size: 17px;
     line-height: 1.5;
 }
-
 .interests-section li {
     padding-left: 5px;
 }
-
 .cv-section {
     width: min(1200px, 100%);
     margin-top: 40px;
     overflow-x: auto;
 }
-
 .cv-section iframe {
     display: block;
     width: 100%;
@@ -235,16 +199,13 @@ nav {
     height: 1100px;
     border: 0;
 }
-
 /* =========================
    FOOTER
    ========================= */
-
 #footer {
     max-width: 1150px;
     margin: 0 auto;
 }
-
 footer {
     padding: 35px 7%;
     border-top: 1px solid var(--line);
@@ -252,11 +213,9 @@ footer {
     color: var(--secondary);
     font-size: 13px;
 }
-
 /* =========================
    MOBILE
    ========================= */
-
 @media (max-width: 700px) {
     nav {
         height: auto;
@@ -264,46 +223,39 @@ footer {
         flex-direction: column;
         gap: 18px;
     }
-
     .nav-links {
         gap: 20px;
         flex-wrap: wrap;
         justify-content: center;
     }
-
     .hero {
         min-height: 60vh;
         padding: 70px 6%;
     }
-
     .hero h1 {
         letter-spacing: -3px;
     }
-
     .content {
         padding: 70px 6%;
     }
-
     .about-text {
         margin-top: 30px;
     }
-
     .interests-section ul {
         grid-template-columns: 1fr;
         gap: 12px;
         margin-top: 30px;
     }
-
     footer {
         padding: 30px 6%;
     }
-
 }
-
+/* =========================
+   CV DROPDOWN
+   ========================= */
 .cv-dropdown {
     margin-top: 22px;
 }
-
 .cv-dropdown summary {
     cursor: pointer;
     font-family: "Roboto", sans-serif;
@@ -314,65 +266,51 @@ footer {
     display: inline-block;
     transition: opacity 0.2s ease;
 }
-
 .cv-dropdown summary::-webkit-details-marker {
     display: none;
 }
-
 .cv-dropdown summary::before {
     content: "▸";
     display: inline-block;
     margin-right: 7px;
     transition: transform 0.25s ease;
 }
-
 .cv-dropdown[open] summary::before {
     transform: rotate(90deg);
 }
-
 .cv-dropdown summary:hover {
     opacity: 0.65;
 }
-
 .cv-dropdown-content {
     display: grid;
     grid-template-rows: 0fr;
     opacity: 0;
     transform: translateY(-10px);
-    transition:
-        grid-template-rows 0.45s ease,
-        opacity 0.3s ease,
-        transform 0.45s ease;
+    transition: grid-template-rows 0.45s ease, opacity 0.3s ease, transform 0.45s ease;
 }
-
 .cv-dropdown[open] .cv-dropdown-content {
     grid-template-rows: 1fr;
     opacity: 1;
     transform: translateY(0);
 }
-
 .cv-dropdown-content > .cv-section {
     min-height: 0;
     overflow: hidden;
     margin-top: 18px;
 }
-
 .cv-section iframe {
     display: block;
     width: 100%;
     height: 850px;
     border: 1px solid #ccc;
 }
-
 /* =========================
    TIME CAPSULE
    ========================= */
-
 #time-capsule {
     padding-top: 65px;
     padding-bottom: 65px;
 }
-
 #time-capsule h2 {
     font-family: "Comfortaa", sans-serif;
     font-size: clamp(34px, 4vw, 52px);
@@ -380,12 +318,10 @@ footer {
     letter-spacing: -2px;
     line-height: 1.1;
 }
-
 #time-capsule .about-text {
     max-width: 900px;
     margin-top: 40px;
 }
-
 #time-capsule .about-text p {
     max-width: 850px;
     margin-bottom: 24px;
@@ -394,12 +330,10 @@ footer {
     font-size: 17px;
     line-height: 1.75;
 }
-
 #capsule {
     max-width: 850px;
     margin-top: 35px;
 }
-
 #capsule input,
 #capsule textarea {
     width: 100%;
@@ -412,37 +346,30 @@ footer {
     font-size: 15px;
     outline: none;
 }
-
 #capsule input:focus,
 #capsule textarea:focus {
     border-color: #999;
 }
-
 #capsule input {
     height: 46px;
     padding: 0 13px;
 }
-
 #capsule textarea {
     padding: 13px;
 }
-
 #capsule-message {
     height: 160px;
     resize: none;
 }
-
 #capsule-key-1,
 #capsule-key-2 {
     height: 75px;
     resize: none;
 }
-
 #capsule-ciphertext {
     height: 110px;
     resize: none;
 }
-
 #capsule label {
     display: block;
     margin-top: 20px;
@@ -450,13 +377,11 @@ footer {
     font-family: "Roboto", sans-serif;
     font-size: 14px;
 }
-
 #capsule-message-length {
     margin: 7px 0 0;
     font-family: "Roboto", sans-serif;
     font-size: 13px;
 }
-
 #capsule button {
     margin-top: 12px;
     padding: 9px 17px;
@@ -469,21 +394,17 @@ footer {
     cursor: pointer;
     transition: border-color 0.2s ease;
 }
-
 #capsule button:hover {
     border-color: #888;
 }
-
 #capsule-actions {
     display: flex;
     gap: 10px;
     margin-bottom: 28px;
 }
-
 #capsule-actions button {
     margin-top: 0;
 }
-
 #capsule-write h3,
 #capsule-open h3 {
     margin: 0 0 22px;
@@ -491,26 +412,21 @@ footer {
     font-size: 22px;
     font-weight: 500;
 }
-
 #capsule-generate-keys {
     margin-top: 12px;
 }
-
 #capsule-encrypt {
     margin-top: 22px;
 }
-
 #capsule-search-result {
     margin-top: 28px;
 }
-
 #capsule-message-result {
     margin-top: 20px;
     font-family: "Roboto", sans-serif;
     font-size: 15px;
     line-height: 1.65;
 }
-
 #capsule-gate-status,
 #capsule-write-status,
 #capsule-open-status {
@@ -518,41 +434,34 @@ footer {
     font-family: "Roboto", sans-serif;
     font-size: 13px;
 }
-
 #capsule-gate-status:empty,
 #capsule-write-status:empty,
 #capsule-open-status:empty {
     display: none;
 }
-
 @media (max-width: 700px) {
-#capsule {
-    max-width: 100%;
+    #capsule {
+        max-width: 100%;
+    }
+    #capsule-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    #capsule-actions button {
+        width: auto;
+    }
 }
-
-#capsule-actions {
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-#capsule-actions button {
-    width: auto;
-}
-
 /* =========================
-CHRONICLES
-========================= */
-
+   CHRONICLES
+   ========================= */
 #chronicles {
     padding-top: 65px;
     padding-bottom: 65px;
 }
-
 #chronicles .about-text {
     max-width: 900px;
     margin-top: 40px;
 }
-
 #chronicles .about-text p {
     max-width: 850px;
     margin-bottom: 24px;
@@ -561,12 +470,10 @@ CHRONICLES
     font-size: 17px;
     line-height: 1.75;
 }
-
 #chronicle {
     max-width: 850px;
     margin-top: 35px;
 }
-
 #chronicle input,
 #chronicle textarea {
     width: 100%;
@@ -579,23 +486,19 @@ CHRONICLES
     font-size: 15px;
     outline: none;
 }
-
 #chronicle input:focus,
 #chronicle textarea:focus {
     border-color: #999;
 }
-
 #chronicle input {
     height: 46px;
     padding: 0 13px;
 }
-
 #chronicle textarea {
     height: 220px;
     padding: 13px;
     resize: none;
 }
-
 #chronicle label {
     display: block;
     margin-top: 20px;
@@ -603,7 +506,6 @@ CHRONICLES
     font-family: "Roboto", sans-serif;
     font-size: 14px;
 }
-
 #chronicle button {
     margin-top: 22px;
     padding: 9px 17px;
@@ -616,22 +518,21 @@ CHRONICLES
     cursor: pointer;
     transition: border-color 0.2s ease;
 }
-
 #chronicle button:hover {
     border-color: #888;
 }
-
 #chronicle-gate-status,
 #chronicle-write-status {
     margin-top: 8px;
     font-family: "Roboto", sans-serif;
     font-size: 13px;
 }
-
 #chronicle-gate-status:empty,
 #chronicle-write-status:empty {
     display: none;
 }
-
+@media (max-width: 700px) {
+    #chronicle {
+        max-width: 100%;
+    }
 }
-        
