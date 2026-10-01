@@ -67,6 +67,9 @@ html.intro-complete #backgroundCanvas {
     display: flex;
     flex-direction: column;
 }
+main {
+    flex: 1;
+}
 html.js:not(.intro-complete) #website {
     visibility: hidden;
     opacity: 0;
