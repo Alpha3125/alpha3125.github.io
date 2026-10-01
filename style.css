@@ -63,6 +63,9 @@ html.intro-complete #backgroundCanvas {
     opacity: 1;
     transform: translateY(0);
     transition: opacity 600ms ease, transform 600ms ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 html.js:not(.intro-complete) #website {
     visibility: hidden;
