@@ -1,6 +1,8 @@
 const CHRONICLES_API = "https://script.google.com/macros/s/AKfycbzg_A5BXWuQbjYW--Z9xekMJew_HWjujGQeTzQpk6ka_itHXAAm8q6kS5h7Dk8R7Jaz/exec";
 const chronicle = document.getElementById("chronicle");
 
+let chroniclesToken = null;
+
 if (chronicle) {
     const gate = document.getElementById("chronicle-gate");
     const gatePassword = document.getElementById("chronicle-password");
@@ -21,14 +23,37 @@ if (chronicle) {
         element.style.color = success ? "#555" : "#777";
     }
 
-    gateUnlock.addEventListener("click", () => {
-        if (gatePassword.value === CHRONICLES_PASSWORD) {
+    gateUnlock.addEventListener("click", async () => {
+        try {
+            gateUnlock.disabled = true;
+            setStatus(gateStatus, "Checking password...");
+
+            const form = new FormData();
+            form.append("action", "unlock");
+            form.append("type", "chronicles");
+            form.append("password", gatePassword.value);
+
+            const response = await fetch(CHRONICLES_API, {
+                method: "POST",
+                body: form
+            });
+
+            const result = await response.json();
+
+            if (!result.ok) {
+                throw new Error(result.error || "Incorrect password.");
+            }
+
+            chroniclesToken = result.token;
+
             gate.style.display = "none";
             content.style.display = "block";
             setStatus(gateStatus, "");
-        } else {
-            setStatus(gateStatus, "Incorrect password.");
+        } catch (error) {
+            setStatus(gateStatus, error.message);
             gatePassword.select();
+        } finally {
+            gateUnlock.disabled = false;
         }
     });
 
@@ -65,6 +90,7 @@ if (chronicle) {
             form.append("title", title);
             form.append("entry", entry);
             form.append("created", new Date().toISOString());
+            form.append("token", chroniclesToken);
 
             const response = await fetch(CHRONICLES_API, {
                 method: "POST",

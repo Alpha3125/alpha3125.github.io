@@ -47,6 +47,7 @@ if (capsule) {
 
     let currentCiphertext = null;
     let currentHash = null;
+    let capsuleToken = null;
 
     /* =========================
        GENERAL HELPERS
@@ -162,6 +163,7 @@ if (capsule) {
         form.append("key2", key2);
         form.append("openingDate", openingDate);
         form.append("created", new Date().toISOString());
+        form.append("token", capsuleToken);
 
         const response = await fetch(CAPSULE_API, {
             method: "POST",
@@ -210,14 +212,37 @@ if (capsule) {
     writePanel.style.display = "none";
     openPanel.style.display = "none";
 
-    gateUnlock.addEventListener("click", () => {
-        if (gatePassword.value === CAPSULE_PASSWORD) {
+    gateUnlock.addEventListener("click", async () => {
+        try {
+            gateUnlock.disabled = true;
+            setStatus(gateStatus, "Checking password...");
+
+            const form = new FormData();
+            form.append("action", "unlock");
+            form.append("type", "capsule");
+            form.append("password", gatePassword.value);
+
+            const response = await fetch(CAPSULE_API, {
+                method: "POST",
+                body: form
+            });
+
+            const result = await response.json();
+
+            if (!result.ok) {
+                throw new Error(result.error || "Incorrect password.");
+            }
+
+            capsuleToken = result.token;
+
             gate.style.display = "none";
             content.style.display = "block";
             setStatus(gateStatus, "");
-        } else {
-            setStatus(gateStatus, "Incorrect password.");
+        } catch (error) {
+            setStatus(gateStatus, error.message);
             gatePassword.select();
+        } finally {
+            gateUnlock.disabled = false;
         }
     });
 
