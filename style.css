@@ -408,7 +408,8 @@ footer {
     margin-top: 0;
 }
 #capsule-write h3,
-#capsule-open h3 {
+#capsule-open h3,
+#chronicle h3 {
     margin: 0 0 22px;
     font-family: "Comfortaa", sans-serif;
     font-size: 22px;
