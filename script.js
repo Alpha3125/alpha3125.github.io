@@ -19,6 +19,21 @@ const ctx = canvas?.getContext("2d");
 const backgroundCanvas = document.getElementById("backgroundCanvas");
 const backgroundCtx = backgroundCanvas?.getContext("2d");
 const page = document.documentElement;
+
+const introNavigation = sessionStorage.getItem("introNavigation");
+if (introNavigation === "skip") {
+    page.classList.add("no-intro");
+}
+sessionStorage.removeItem("introNavigation");
+document.querySelectorAll("[data-intro]").forEach(link => {
+    link.addEventListener("click", () => {
+        sessionStorage.setItem(
+            "introNavigation",
+            link.dataset.intro === "skip" ? "skip" : "replay"
+        );
+    });
+});
+
 const runIntro = !!canvas && !!ctx && !page.classList.contains("no-intro");
 
 if (!backgroundCanvas || !backgroundCtx) {

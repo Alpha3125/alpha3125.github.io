@@ -96,6 +96,8 @@ nav {
     font-size: 17px;
     font-weight: 700;
     letter-spacing: 1px;
+    color: var(--text);
+    text-decoration: none;
 }
 .nav-links {
     display: flex;
