@@ -153,13 +153,14 @@ if (capsule) {
        API
        ========================= */
 
-    async function storeCapsule(name, ciphertext, hash, openingDate) {
+    async function storeCapsule(name, ciphertext, hash, key1, key2, openingDate) {
         const form = new FormData();
-
         form.append("action", "store");
         form.append("name", name);
         form.append("ciphertext", ciphertext);
         form.append("hash", hash);
+        form.append("key1", key1);
+        form.append("key2", key2);
         form.append("openingDate", openingDate);
         form.append("created", new Date().toISOString());
 
@@ -173,7 +174,6 @@ if (capsule) {
         }
 
         const text = await response.text();
-
         let result;
 
         try {
@@ -183,9 +183,7 @@ if (capsule) {
         }
 
         if (result.ok === false) {
-            throw new Error(
-                result.error || "The server rejected the capsule."
-            );
+            throw new Error(result.error || "The server rejected the capsule.");
         }
 
         return result;
@@ -343,6 +341,8 @@ if (capsule) {
                 name,
                 encodedCiphertext,
                 hash,
+                key1Input.value,
+                key2Input.value,
                 openingDate
             );
 
@@ -390,12 +390,15 @@ if (capsule) {
                 return;
             }
 
-            if (!result.available) {
-                setStatus(
-                    openStatus,
-                    `This capsule cannot be opened yet. Promised opening date: ${result.openingDate}`
+            if (result.early) {
+                const openEarly = confirm(
+                    `This capsule was intended to be opened on ${result.openingDate}.\n\nAre you sure you want to open it early?`
                 );
-                return;
+
+                if (!openEarly) {
+                    setStatus(openStatus, "Opening cancelled.");
+                    return;
+                }
             }
 
             if (!result.ciphertext) {
