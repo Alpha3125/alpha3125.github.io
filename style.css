@@ -24,6 +24,35 @@ body {
     color: var(--text);
     overflow-x: hidden;
 }
+
+/* =========================
+   SOCIAL LINKS
+   ========================= */
+
+.social-section {
+    padding-top: 0;
+    padding-bottom: 80px;
+    border-top: 0;
+}
+
+.social-links {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.social-links a {
+    color: var(--text);
+    font-size: 22px;
+    text-decoration: none;
+    transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.social-links a:hover {
+    opacity: 0.5;
+    transform: translateY(-2px);
+}
+
 /* =========================
    INTRO / PAGE REVEAL
    ========================= */
