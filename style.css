@@ -38,6 +38,7 @@ body {
 .social-links {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 25px;
 }
 
